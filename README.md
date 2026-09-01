@@ -15,6 +15,8 @@ The collection covers authentication, product endpoints, cart endpoints, and neg
 - Postman Environment Variables
 - DummyJSON API
 - Collection Runner
+- Newman
+- Newman HTML Extra Reporter
 - GitHub
 
 ## API Under Test
@@ -88,20 +90,42 @@ DummyJSON Environment
 
 4. Run the collection using Postman Collection Runner.
 
+Or run it from the command line using Newman:
+
+```bash
+newman run ecommerce-api-tests.postman_collection.json -e dummyjson.postman_environment.json
+```
+
+To generate the HTML report:
+
+```bash
+newman run ecommerce-api-tests.postman_collection.json -e dummyjson.postman_environment.json -r htmlextra --reporter-htmlextra-export newman-report.html
+```
+
 ## Test Run Summary
 
 Latest local test run:
 
 ```text
-Total tests: 27
-Passed: 27
+Iterations: 1
+Requests: 9
+Assertions: 27
 Failed: 0
 Errors: 0
+Average response time: 143ms
+```
+
+HTML report:
+
+```text
+newman-report.html
 ```
 
 ## Notes
 
 The `access_token` value is intentionally left empty in the environment file. It is generated automatically after running the login request.
+
+DummyJSON is a public demo API. This project is intended to demonstrate API testing workflow, test coverage planning, Postman scripting, negative testing, and Newman reporting.
 
 ## Author
 
