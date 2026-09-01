@@ -1,0 +1,498 @@
+{
+  "info": {
+    "_postman_id": "03b38155-1cc6-4708-b690-51d207efe015",
+    "name": "E-commerce API Tests - DummyJSON",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "56519193",
+    "_collection_link": "https://go.postman.co/collection/56519193-03b38155-1cc6-4708-b690-51d207efe015?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "01 - Auth",
+      "item": [
+        {
+          "name": "Login - valid credentials",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response contains access token\", function () {\r",
+                  "    const response = pm.response.json();\r",
+                  "    pm.expect(response.accessToken).to.exist;\r",
+                  "    pm.environment.set(\"access_token\", response.accessToken);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"User data is returned\", function () {\r",
+                  "    const response = pm.response.json();\r",
+                  "    pm.expect(response.username).to.eql(pm.environment.get(\"username\"));\r",
+                  "    pm.expect(response.email).to.include(\"@\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"username\": \"{{username}}\",\r\n  \"password\": \"{{password}}\",\r\n  \"expiresInMins\": 30\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get current authenticated user",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Authenticated user data is returned\", function () {\r",
+                  "    const response = pm.response.json();\r",
+                  "\r",
+                  "    pm.expect(response.id).to.exist;\r",
+                  "    pm.expect(response.username).to.eql(pm.environment.get(\"username\"));\r",
+                  "    pm.expect(response.email).to.include(\"@\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response time is below 1000ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "02 - Products",
+      "item": [
+        {
+          "name": "Get all products",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Products list is returned\", function () {\r",
+                  "    const response = pm.response.json();\r",
+                  "\r",
+                  "    pm.expect(response.products).to.be.an(\"array\");\r",
+                  "    pm.expect(response.products.length).to.be.above(0);\r",
+                  "    pm.expect(response.total).to.be.a(\"number\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"First product has required fields\", function () {\r",
+                  "    const response = pm.response.json();\r",
+                  "    const firstProduct = response.products[0];\r",
+                  "\r",
+                  "    pm.expect(firstProduct.id).to.exist;\r",
+                  "    pm.expect(firstProduct.title).to.be.a(\"string\");\r",
+                  "    pm.expect(firstProduct.price).to.be.a(\"number\");\r",
+                  "    pm.expect(firstProduct.category).to.be.a(\"string\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get single product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Product data is returned\", function () {\r",
+                  "    const response = pm.response.json();\r",
+                  "\r",
+                  "    pm.expect(response.id).to.eql(Number(pm.environment.get(\"product_id\")));\r",
+                  "    pm.expect(response.title).to.be.a(\"string\");\r",
+                  "    pm.expect(response.price).to.be.a(\"number\");\r",
+                  "    pm.expect(response.category).to.be.a(\"string\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Product rating and stock are valid numbers\", function () {\r",
+                  "    const response = pm.response.json();\r",
+                  "\r",
+                  "    pm.expect(response.rating).to.be.a(\"number\");\r",
+                  "    pm.expect(response.stock).to.be.a(\"number\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/{{product_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "{{product_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search products",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Search results are returned as an array\", function () {\r",
+                  "    const response = pm.response.json();\r",
+                  "\r",
+                  "    pm.expect(response.products).to.be.an(\"array\");\r",
+                  "    pm.expect(response.total).to.be.a(\"number\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Search result contains product fields\", function () {\r",
+                  "    const response = pm.response.json();\r",
+                  "\r",
+                  "    if (response.products.length > 0) {\r",
+                  "        const firstProduct = response.products[0];\r",
+                  "\r",
+                  "        pm.expect(firstProduct.id).to.exist;\r",
+                  "        pm.expect(firstProduct.title).to.be.a(\"string\");\r",
+                  "        pm.expect(firstProduct.price).to.be.a(\"number\");\r",
+                  "    }\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/search?q=phone",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "phone"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "03 - Carts",
+      "item": [
+        {
+          "name": "Get single cart",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Cart data is returned\", function () {\r",
+                  "    const response = pm.response.json();\r",
+                  "\r",
+                  "    pm.expect(response.id).to.eql(Number(pm.environment.get(\"cart_id\")));\r",
+                  "    pm.expect(response.products).to.be.an(\"array\");\r",
+                  "    pm.expect(response.products.length).to.be.above(0);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Cart totals are valid numbers\", function () {\r",
+                  "    const response = pm.response.json();\r",
+                  "\r",
+                  "    pm.expect(response.total).to.be.a(\"number\");\r",
+                  "    pm.expect(response.discountedTotal).to.be.a(\"number\");\r",
+                  "    pm.expect(response.totalProducts).to.be.a(\"number\");\r",
+                  "    pm.expect(response.totalQuantity).to.be.a(\"number\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/carts/{{cart_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "carts",
+                "{{cart_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get carts by user",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"User carts are returned\", function () {\r",
+                  "    const response = pm.response.json();\r",
+                  "\r",
+                  "    pm.expect(response.carts).to.be.an(\"array\");\r",
+                  "    pm.expect(response.total).to.be.a(\"number\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Cart belongs to expected user\", function () {\r",
+                  "    const response = pm.response.json();\r",
+                  "\r",
+                  "    if (response.carts.length > 0) {\r",
+                  "        pm.expect(response.carts[0].userId).to.eql(1);\r",
+                  "    }\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/carts/user/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "carts",
+                "user",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "04 - Negative Tests",
+      "item": [
+        {
+          "name": "Login - invalid password",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400\", function () {\r",
+                  "    pm.response.to.have.status(400);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Error message is returned\", function () {\r",
+                  "    const response = pm.response.json();\r",
+                  "\r",
+                  "    pm.expect(response.message).to.exist;\r",
+                  "    pm.expect(response.message).to.be.a(\"string\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Access token is not returned\", function () {\r",
+                  "    const response = pm.response.json();\r",
+                  "\r",
+                  "    pm.expect(response.accessToken).to.be.undefined;\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"username\": \"{{username}}\",\r\n  \"password\": \"wrongpassword\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get non-existing product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 404\", function () {\r",
+                  "    pm.response.to.have.status(404);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Error message is returned\", function () {\r",
+                  "    const response = pm.response.json();\r",
+                  "\r",
+                  "    pm.expect(response.message).to.exist;\r",
+                  "    pm.expect(response.message).to.be.a(\"string\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Product data is not returned\", function () {\r",
+                  "    const response = pm.response.json();\r",
+                  "\r",
+                  "    pm.expect(response.id).to.be.undefined;\r",
+                  "    pm.expect(response.title).to.be.undefined;\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/999999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "999999"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
